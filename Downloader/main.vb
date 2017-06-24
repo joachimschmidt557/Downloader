@@ -74,22 +74,14 @@ Public Class main
     End Sub
 
     Private Sub ButtonSettings_Click(sender As System.Object, e As System.EventArgs) Handles ButtonSettings.Click
-        If ButtonSettings.Text = "Settings" Then
-            If Label.Visible = True Then
-                Label.Visible = False
-                TextBoxPath.Visible = False
-                Me.Height = 158
-            Else
-                Label.Visible = True
-                TextBoxPath.Visible = True
-                Me.Height = 246
-            End If
+        If Label.Visible = True Then
+            Label.Visible = False
+            TextBoxPath.Visible = False
+            Me.Height = 158
         Else
-            Try
-                System.Diagnostics.Process.Start(ButtonSettings.Text)
-            Catch ex As Exception
-                MsgBox("An error occured. " + vbCrLf + "Details: " + ex.ToString, MsgBoxStyle.Critical, "Error!")
-            End Try
+            Label.Visible = True
+            TextBoxPath.Visible = True
+            Me.Height = 246
         End If
     End Sub
 
