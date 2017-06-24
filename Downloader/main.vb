@@ -37,6 +37,7 @@ Public Class Main
         Try
             'If DownloadDirectory.Exists = True Then
             If TextBox.Text <> "" And TextBoxPath.Text <> "" Then
+                ' Input is complete, let's check if it's ok
                 'Disable all buttons first
                 DownloadButton.Enabled = False
                 'ButtonSettings.Enabled = False
@@ -54,7 +55,7 @@ Public Class Main
                 downloadedFile = localfile
                 'Now check the internet connection
                 If CheckForInternetConnection() = False Then
-                    MsgBox("There is no internet connection. ", MsgBoxStyle.Exclamation, "Error")
+                    NotifyIcon.ShowBalloonTip(2000, "Downloader", "No internet connection found. ", ToolTipIcon.Error)
                     Exit Sub
                 End If
                 'Start the Stopwatch

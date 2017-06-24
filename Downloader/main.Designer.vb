@@ -41,6 +41,7 @@ Partial Class Main
         Me.DownloadFromClipboardToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ExitDownloaderToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.DestinationFileDialog = New System.Windows.Forms.SaveFileDialog()
+        Me.DownloadFromClipboardAsToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.GroupBoxDetails.SuspendLayout()
         Me.ContextMenuStrip.SuspendLayout()
         Me.SuspendLayout()
@@ -147,27 +148,33 @@ Partial Class Main
         '
         'ContextMenuStrip
         '
-        Me.ContextMenuStrip.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.OpenDownloaderToolStripMenuItem, Me.DownloadFromClipboardToolStripMenuItem, Me.ExitDownloaderToolStripMenuItem})
+        Me.ContextMenuStrip.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.OpenDownloaderToolStripMenuItem, Me.DownloadFromClipboardToolStripMenuItem, Me.DownloadFromClipboardAsToolStripMenuItem, Me.ExitDownloaderToolStripMenuItem})
         Me.ContextMenuStrip.Name = "ContextMenuStrip"
-        Me.ContextMenuStrip.Size = New System.Drawing.Size(213, 70)
+        Me.ContextMenuStrip.Size = New System.Drawing.Size(236, 114)
         '
         'OpenDownloaderToolStripMenuItem
         '
         Me.OpenDownloaderToolStripMenuItem.Name = "OpenDownloaderToolStripMenuItem"
-        Me.OpenDownloaderToolStripMenuItem.Size = New System.Drawing.Size(212, 22)
+        Me.OpenDownloaderToolStripMenuItem.Size = New System.Drawing.Size(235, 22)
         Me.OpenDownloaderToolStripMenuItem.Text = "Open Downloader"
         '
         'DownloadFromClipboardToolStripMenuItem
         '
         Me.DownloadFromClipboardToolStripMenuItem.Name = "DownloadFromClipboardToolStripMenuItem"
-        Me.DownloadFromClipboardToolStripMenuItem.Size = New System.Drawing.Size(212, 22)
+        Me.DownloadFromClipboardToolStripMenuItem.Size = New System.Drawing.Size(235, 22)
         Me.DownloadFromClipboardToolStripMenuItem.Text = "Download from Clipboard"
         '
         'ExitDownloaderToolStripMenuItem
         '
         Me.ExitDownloaderToolStripMenuItem.Name = "ExitDownloaderToolStripMenuItem"
-        Me.ExitDownloaderToolStripMenuItem.Size = New System.Drawing.Size(212, 22)
+        Me.ExitDownloaderToolStripMenuItem.Size = New System.Drawing.Size(235, 22)
         Me.ExitDownloaderToolStripMenuItem.Text = "Exit Downloader"
+        '
+        'DownloadFromClipboardAsToolStripMenuItem
+        '
+        Me.DownloadFromClipboardAsToolStripMenuItem.Name = "DownloadFromClipboardAsToolStripMenuItem"
+        Me.DownloadFromClipboardAsToolStripMenuItem.Size = New System.Drawing.Size(235, 22)
+        Me.DownloadFromClipboardAsToolStripMenuItem.Text = "Download from Clipboard as..."
         '
         'Main
         '
@@ -212,4 +219,5 @@ Partial Class Main
     Friend WithEvents DownloadFromClipboardToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents ExitDownloaderToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents DestinationFileDialog As SaveFileDialog
+    Friend WithEvents DownloadFromClipboardAsToolStripMenuItem As ToolStripMenuItem
 End Class
