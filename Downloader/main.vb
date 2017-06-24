@@ -2,15 +2,15 @@
 Imports System.ComponentModel
 
 Public Class Main
-    Dim DownloadDirectory As System.IO.DirectoryInfo
+    Dim downloadDirectory As IO.DirectoryInfo
     Dim isMainWindow As Boolean = False
-    Dim downloadfnotification As New DownloadFinished
-    Dim downloadedfile As String
+    Dim downloadFinishedNotification As New DownloadFinished
+    Dim downloadedFile As String
     Dim SW As Stopwatch
-    Dim downloadrunning As Boolean = False
+    Dim isDownloadRunning As Boolean = False
 
     Private Sub main_FormClosing(sender As Object, e As System.Windows.Forms.FormClosingEventArgs) Handles Me.FormClosing
-        If downloadrunning = True Then
+        If isDownloadRunning = True Then
             If MsgBox("Do you really want to close? All running Downloads will be canceled. ", MsgBoxStyle.OkCancel, "Close") = MsgBoxResult.Ok Then
                 e.Cancel = False
             Else
@@ -20,7 +20,7 @@ Public Class Main
     End Sub
 
     Private Sub Form1_Load(sender As System.Object, e As System.EventArgs) Handles MyBase.Load
-        Me.Height = 158
+        Height = 158
         Label.Visible = False
         TextBoxPath.Visible = False
         TextBoxPath.Text = "D:\Downloader\"
@@ -28,6 +28,12 @@ Public Class Main
     End Sub
 
     Private Sub DownloadButton_Click(sender As System.Object, e As System.EventArgs) Handles DownloadButton.Click
+
+        StartDownload()
+
+    End Sub
+
+    Private Sub StartDownload()
         Try
             'If DownloadDirectory.Exists = True Then
             If TextBox.Text <> "" And TextBoxPath.Text <> "" Then
@@ -47,7 +53,7 @@ Public Class Main
                 localfile = EvaluateLocalFile(shortfilename)
                 'Now show the local file in the  settings button
                 'ButtonSettings.Text = localfile
-                downloadedfile = localfile
+                downloadedFile = localfile
                 'Now check the internet connection
                 If CheckForInternetConnection() = False Then
                     MsgBox("There is no internet connection. ", MsgBoxStyle.Exclamation, "Error")
@@ -58,10 +64,10 @@ Public Class Main
                 'Show balloon
                 NotifyIcon.ShowBalloonTip(2000, "Downloader", "Your download is starting.", ToolTipIcon.Info)
                 'Now Download
-                downloadrunning = True
+                isDownloadRunning = True
                 s.DownloadFileAsync(New Uri(TextBox.Text), localfile)
             Else
-                downloadrunning = False
+                isDownloadRunning = False
                 MsgBox("An input is missing!", MsgBoxStyle.Exclamation, "Downloader")
             End If
             'Else
@@ -69,7 +75,7 @@ Public Class Main
             'MsgBox("Please Restart the Download. ")
             'End If
         Catch ex As Exception
-            MsgBox("An error occured. " + vbCrLf + "Details: " + ex.ToString, MsgBoxStyle.Critical, "Error!")
+            MsgBox("An error occured. " + Environment.NewLine + "Details: " + ex.ToString, MsgBoxStyle.Critical, "Error!")
         End Try
     End Sub
 
@@ -109,14 +115,14 @@ Public Class Main
         'Calculate speed
         Speed = CInt(e.BytesReceived / SW.ElapsedMilliseconds)
         'Update NotifyIcon
-        NotifyIcon.Text = "Downloader" + vbCrLf + e.ProgressPercentage.ToString + "%"
+        NotifyIcon.Text = "Downloader" + Environment.NewLine + e.ProgressPercentage.ToString + "%"
         'Show speed & Bytes transferred & bytes remaining
         BytesLabel.Text = e.BytesReceived.ToString + " Bytes of " + e.TotalBytesToReceive.ToString + " Bytes @" + Speed.ToString + "KB/sec"
     End Sub
 
     Public Sub Finished(sender As System.Object, e As AsyncCompletedEventArgs)
         'Set downloadrunning to false
-        downloadrunning = False
+        isDownloadRunning = False
         'Reset everything
         DownloadButton.Enabled = True
         DownloadButton.Text = "Download"
@@ -127,22 +133,22 @@ Public Class Main
         Me.Text = "Downloader - Finished"
         BytesLabel.Text = "No download running"
         'Update NotifyIcon
-        NotifyIcon.Text = "Downloader" + vbCrLf + "Download finished"
+        NotifyIcon.Text = "Downloader" + Environment.NewLine + "Download finished"
         'Show download notification
-        If downloadfnotification.ShowDialog() = Windows.Forms.DialogResult.OK Then
+        If downloadFinishedNotification.ShowDialog() = Windows.Forms.DialogResult.OK Then
             Try
-                System.Diagnostics.Process.Start(downloadedfile)
+                Process.Start(downloadedFile)
             Catch ex As Exception
-                MsgBox("An error occured. " + vbCrLf + "Details: " + ex.ToString, MsgBoxStyle.Critical, "Error!")
+                MsgBox("An error occured. " + Environment.NewLine + "Details: " + ex.ToString, MsgBoxStyle.Critical, "Error!")
             End Try
         End If
     End Sub
 
     Private Sub ButtonNew_Click(sender As System.Object, e As System.EventArgs) Handles ButtonNew.Click
         Try
-            Diagnostics.Process.Start(Application.ExecutablePath)
+            Process.Start(Application.ExecutablePath)
         Catch ex As Exception
-            MsgBox("An error occured. " + vbCrLf + ex.ToString)
+            MsgBox("An error occured. " + Environment.NewLine + ex.ToString)
         End Try
     End Sub
 
@@ -179,9 +185,9 @@ Public Class Main
     Private Sub DownloadFromClipboardToolStripMenuItem_Click(sender As System.Object, e As System.EventArgs) Handles DownloadFromClipboardToolStripMenuItem.Click
         If Clipboard.ContainsText() Then
             TextBox.Text = Clipboard.GetText()
-            DownloadButton_Click(Nothing, Nothing)
+            StartDownload()
         Else
-            MsgBox("An error occured. " + vbCrLf + "Details: There is no text in the clipboard. ", MsgBoxStyle.Critical, "Error!")
+            MsgBox("An error occured. " + Environment.NewLine + "Details: There is no text in the clipboard. ", MsgBoxStyle.Critical, "Error!")
         End If
     End Sub
 

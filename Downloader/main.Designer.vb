@@ -40,6 +40,7 @@ Partial Class Main
         Me.OpenDownloaderToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.DownloadFromClipboardToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ExitDownloaderToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.DestinationFileDialog = New System.Windows.Forms.SaveFileDialog()
         Me.GroupBoxDetails.SuspendLayout()
         Me.ContextMenuStrip.SuspendLayout()
         Me.SuspendLayout()
@@ -168,7 +169,7 @@ Partial Class Main
         Me.ExitDownloaderToolStripMenuItem.Size = New System.Drawing.Size(212, 22)
         Me.ExitDownloaderToolStripMenuItem.Text = "Exit Downloader"
         '
-        'main
+        'Main
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
@@ -185,7 +186,7 @@ Partial Class Main
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.MaximizeBox = False
-        Me.Name = "main"
+        Me.Name = "Main"
         Me.Text = "Downloader"
         Me.GroupBoxDetails.ResumeLayout(False)
         Me.GroupBoxDetails.PerformLayout()
@@ -210,5 +211,5 @@ Partial Class Main
     Friend WithEvents OpenDownloaderToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents DownloadFromClipboardToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents ExitDownloaderToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
-
+    Friend WithEvents DestinationFileDialog As SaveFileDialog
 End Class
