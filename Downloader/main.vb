@@ -51,8 +51,6 @@ Public Class Main
                 Dim localfile As String
                 shortfilename = EvaluateInternetSourceFile(TextBox.Text)
                 localfile = EvaluateLocalFile(shortfilename)
-                'Now show the local file in the  settings button
-                'ButtonSettings.Text = localfile
                 downloadedFile = localfile
                 'Now check the internet connection
                 If CheckForInternetConnection() = False Then
@@ -64,6 +62,7 @@ Public Class Main
                 'Show balloon
                 NotifyIcon.ShowBalloonTip(2000, "Downloader", "Your download is starting.", ToolTipIcon.Info)
                 'Now Download
+                ProgressBar.Style = ProgressBarStyle.Marquee
                 isDownloadRunning = True
                 s.DownloadFileAsync(New Uri(TextBox.Text), localfile)
             Else
@@ -77,6 +76,12 @@ Public Class Main
         Catch ex As Exception
             MsgBox("An error occured. " + Environment.NewLine + "Details: " + ex.ToString, MsgBoxStyle.Critical, "Error!")
         End Try
+    End Sub
+
+    Private Sub CancelDownload()
+
+
+
     End Sub
 
     Private Sub ButtonSettings_Click(sender As System.Object, e As System.EventArgs) Handles ButtonSettings.Click
@@ -107,6 +112,7 @@ Public Class Main
     Public Sub DownloadProgressChanged(sender As System.Object, e As DownloadProgressChangedEventArgs)
         Dim Speed As Integer
         'Show progress
+        ProgressBar.Style = ProgressBarStyle.Blocks
         ProgressBar.Value = e.ProgressPercentage
         'Show percentage
         DownloadButton.Text = e.ProgressPercentage.ToString + "%"
@@ -135,13 +141,8 @@ Public Class Main
         'Update NotifyIcon
         NotifyIcon.Text = "Downloader" + Environment.NewLine + "Download finished"
         'Show download notification
-        If downloadFinishedNotification.ShowDialog() = Windows.Forms.DialogResult.OK Then
-            Try
-                Process.Start(downloadedFile)
-            Catch ex As Exception
-                MsgBox("An error occured. " + Environment.NewLine + "Details: " + ex.ToString, MsgBoxStyle.Critical, "Error!")
-            End Try
-        End If
+        NotifyIcon.ShowBalloonTip(5000, "Download finished", "Click or tap here to open " + downloadedFile, ToolTipIcon.Info)
+
     End Sub
 
     Private Sub ButtonNew_Click(sender As System.Object, e As System.EventArgs) Handles ButtonNew.Click
@@ -195,4 +196,7 @@ Public Class Main
         Me.Close()
     End Sub
 
+    Private Sub NotifyIcon_BalloonTipClicked(sender As Object, e As EventArgs) Handles NotifyIcon.BalloonTipClicked
+        ' If the balloon is about a finished download, open the downloaded file
+    End Sub
 End Class
