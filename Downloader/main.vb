@@ -1,9 +1,9 @@
 ﻿Imports System.Net
 Imports System.ComponentModel
 
-Public Class main
+Public Class Main
     Dim DownloadDirectory As System.IO.DirectoryInfo
-    Dim mainwindow As Boolean = False
+    Dim isMainWindow As Boolean = False
     Dim downloadfnotification As New DownloadFinished
     Dim downloadedfile As String
     Dim SW As Stopwatch
@@ -105,7 +105,7 @@ Public Class main
         'Show percentage
         DownloadButton.Text = e.ProgressPercentage.ToString + "%"
         '... in window title
-            Me.Text = "Downloader - " + e.ProgressPercentage.ToString + "%"
+        Me.Text = "Downloader - " + e.ProgressPercentage.ToString + "%"
         'Calculate speed
         Speed = CInt(e.BytesReceived / SW.ElapsedMilliseconds)
         'Update NotifyIcon
@@ -147,7 +147,7 @@ Public Class main
     End Sub
 
     Public Function CheckForInternetConnection() As Boolean
-        If mainwindow = False Then
+        If isMainWindow = False Then
             Me.Text = "Downloader - Checking internet connection..."
         Else
             Me.Text = "Main Downloader - Checking internet connection..."
@@ -189,18 +189,4 @@ Public Class main
         Me.Close()
     End Sub
 
-    Private Sub Timer_Tick(sender As System.Object, e As System.EventArgs) Handles Timer.Tick
-        Try
-            Dim sw As New IO.StreamWriter(TextBoxPath.Text + "\.downloader")
-            If DownloadButton.Enabled = True Then
-                sw.WriteLine("a true")
-                sw.WriteLine(downloadedfile)
-                sw.WriteLine(ProgressBar.Value)
-            Else
-                sw.WriteLine("a false")
-            End If
-            sw.Close()
-        Catch
-        End Try
-    End Sub
 End Class
