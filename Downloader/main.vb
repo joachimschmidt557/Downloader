@@ -2,6 +2,7 @@
 Imports System.ComponentModel
 
 Public Class Main
+
     Dim downloadDirectory As IO.DirectoryInfo
     Dim isMainWindow As Boolean = False
     Dim downloadedFile As String
