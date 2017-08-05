@@ -21,15 +21,32 @@ Public Class Main
         Height = 158
         Label.Visible = False
         TextBoxPath.Visible = False
-        TextBoxPath.Text = "D:\Downloader\"
+        TextBoxPath.Text = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory)
         BytesLabel.Text = "No Download running"
     End Sub
 
     Private Sub DownloadButton_Click(sender As System.Object, e As System.EventArgs) Handles DownloadButton.Click
 
-        StartDownload(TextBox.Text, TextBoxPath.Text)
+        Dim overWrite As Boolean = False
+        If CheckForOverwrite(TextBox.Text, TextBoxPath.Text) Then
+            If MsgBox("Do you want to overwrite the existing file?", MsgBoxStyle.YesNo, "Overwrite") = MsgBoxResult.Yes Then
+                overWrite = True
+            Else
+                Exit Sub
+            End If
+        End If
+        StartDownload(TextBox.Text, GetLocalFilePath(TextBox.Text, TextBoxPath.Text), overWrite)
 
     End Sub
+
+    Private Function CheckForOverwrite(url As String, folder As String) As Boolean
+
+        If IO.File.Exists(GetLocalFilePath(url, folder)) Then
+            Return True
+        End If
+        Return False
+
+    End Function
 
     Private Sub StartDownload(urlPath As String, localPath As String, Optional overwriteExistingFiles As Boolean = False)
         Try
@@ -40,41 +57,37 @@ Public Class Main
             If localPath = "" Then Throw New InvalidFilePathException("Empty file path was given")
             If IO.File.Exists(localPath) And Not overwriteExistingFiles Then Throw New InvalidFilePathException("File already exists")
 
-            ' Input is complete, let's check if it's ok
             'Disable all buttons first
             DownloadButton.Enabled = False
             'ButtonSettings.Enabled = False
             TextBoxPath.Enabled = False
             TextBox.Enabled = False
+
             'Now Declare
             Dim s As New WebClient
             AddHandler s.DownloadProgressChanged, AddressOf DownloadProgressChanged
             AddHandler s.DownloadFileCompleted, AddressOf Finished
-            'Now Evaluate
-            Dim shortfilename As String
-            Dim localfile As String
-            shortfilename = EvaluateInternetSourceFile(TextBox.Text)
-            localfile = EvaluateLocalFile(shortfilename)
-            downloadedFile = localfile
+
             'Now check the internet connection
             If CheckForInternetConnection() = False Then
                 NotifyIcon.ShowBalloonTip(2000, "Downloader", "No internet connection found. ", ToolTipIcon.Error)
                 Exit Sub
             End If
+
             'Start the Stopwatch
             SW = Stopwatch.StartNew
+
             'Show balloon
             NotifyIcon.ShowBalloonTip(2000, "Downloader", "Your download is starting.", ToolTipIcon.Info)
+
             'Now Download
             ProgressBar.Style = ProgressBarStyle.Marquee
+            TaskbarProgress.SetState(Me.Handle, TaskbarProgress.TaskbarStates.Indeterminate)
             isDownloadRunning = True
-            s.DownloadFileAsync(New Uri(TextBox.Text), localfile)
-            'Else
-            'DownloadDirectory.Create()
-            'MsgBox("Please Restart the Download. ")
-            'End If
+            s.DownloadFileAsync(New Uri(TextBox.Text), localPath)
+
         Catch ex As Exception
-            MsgBox("An error occured. " + Environment.NewLine + "Details: " + ex.ToString, MsgBoxStyle.Critical, "Error!")
+            MsgBox("An error occured. " + Environment.NewLine + "Details: " + ex.Message, MsgBoxStyle.Critical, "Error!")
         End Try
     End Sub
 
@@ -96,6 +109,13 @@ Public Class Main
         End If
     End Sub
 
+    Public Function GetLocalFilePath(url As String, folderPath As String) As String
+
+        Dim file As String = EvaluateInternetSourceFile(url)
+        Return folderPath + file
+
+    End Function
+
     Public Function EvaluateInternetSourceFile(ByVal longName As String) As String
         Dim fnPeices() As String = longName.Split("/")
         Dim filename As String = ""
@@ -103,17 +123,14 @@ Public Class Main
         Return filename
     End Function
 
-    Public Function EvaluateLocalFile(ByVal filename As String) As String
-        Dim localfilea As String = ""
-        localfilea = TextBoxPath.Text + filename
-        Return localfilea
-    End Function
-
     Public Sub DownloadProgressChanged(sender As System.Object, e As DownloadProgressChangedEventArgs)
         Dim Speed As Integer
         'Show progress
         ProgressBar.Style = ProgressBarStyle.Blocks
         ProgressBar.Value = e.ProgressPercentage
+        ' in the taskbar
+        TaskbarProgress.SetState(Me.Handle, TaskbarProgress.TaskbarStates.Normal)
+        TaskbarProgress.SetValue(Me.Handle, e.ProgressPercentage, 100)
         'Show percentage
         DownloadButton.Text = e.ProgressPercentage.ToString + "%"
         '... in window title
@@ -135,6 +152,7 @@ Public Class Main
         ButtonSettings.Enabled = True
         TextBox.Enabled = True
         TextBoxPath.Enabled = True
+        TaskbarProgress.SetState(Me.Handle, TaskbarProgress.TaskbarStates.NoProgress)
         'Show window text
         Me.Text = "Downloader - Finished"
         BytesLabel.Text = "No download running"
@@ -193,6 +211,9 @@ Public Class Main
     End Sub
 
     Private Sub NotifyIcon_BalloonTipClicked(sender As Object, e As EventArgs) Handles NotifyIcon.BalloonTipClicked
-        ' If the balloon is about a finished download, open the downloaded file
+        ' If the balloon is aboult a finished download, open the downloaded file
+        If NotifyIcon.BalloonTipTitle = "Download finished" Then
+            Process.Start(GetLocalFilePath(TextBox.Text, TextBoxPath.Text))
+        End If
     End Sub
 End Class
