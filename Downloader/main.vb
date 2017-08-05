@@ -4,7 +4,6 @@ Imports System.ComponentModel
 Public Class Main
     Dim downloadDirectory As IO.DirectoryInfo
     Dim isMainWindow As Boolean = False
-    Dim downloadFinishedNotification As New DownloadFinished
     Dim downloadedFile As String
     Dim SW As Stopwatch
     Dim isDownloadRunning As Boolean = False
