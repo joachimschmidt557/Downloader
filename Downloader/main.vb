@@ -3,8 +3,6 @@ Imports System.ComponentModel
 
 Public Class Main
 
-    Dim downloadDirectory As IO.DirectoryInfo
-    Dim isMainWindow As Boolean = False
     Dim downloadedFile As String
     Dim SW As Stopwatch
     Dim isDownloadRunning As Boolean = False
@@ -29,47 +27,48 @@ Public Class Main
 
     Private Sub DownloadButton_Click(sender As System.Object, e As System.EventArgs) Handles DownloadButton.Click
 
-        StartDownload()
+        StartDownload(TextBox.Text, TextBoxPath.Text)
 
     End Sub
 
-    Private Sub StartDownload()
+    Private Sub StartDownload(urlPath As String, localPath As String, Optional overwriteExistingFiles As Boolean = False)
         Try
-            'If DownloadDirectory.Exists = True Then
-            If TextBox.Text <> "" And TextBoxPath.Text <> "" Then
-                ' Input is complete, let's check if it's ok
-                'Disable all buttons first
-                DownloadButton.Enabled = False
-                'ButtonSettings.Enabled = False
-                TextBoxPath.Enabled = False
-                TextBox.Enabled = False
-                'Now Declare
-                Dim s As New WebClient
-                AddHandler s.DownloadProgressChanged, AddressOf DownloadProgressChanged
-                AddHandler s.DownloadFileCompleted, AddressOf Finished
-                'Now Evaluate
-                Dim shortfilename As String
-                Dim localfile As String
-                shortfilename = EvaluateInternetSourceFile(TextBox.Text)
-                localfile = EvaluateLocalFile(shortfilename)
-                downloadedFile = localfile
-                'Now check the internet connection
-                If CheckForInternetConnection() = False Then
-                    NotifyIcon.ShowBalloonTip(2000, "Downloader", "No internet connection found. ", ToolTipIcon.Error)
-                    Exit Sub
-                End If
-                'Start the Stopwatch
-                SW = Stopwatch.StartNew
-                'Show balloon
-                NotifyIcon.ShowBalloonTip(2000, "Downloader", "Your download is starting.", ToolTipIcon.Info)
-                'Now Download
-                ProgressBar.Style = ProgressBarStyle.Marquee
-                isDownloadRunning = True
-                s.DownloadFileAsync(New Uri(TextBox.Text), localfile)
-            Else
-                isDownloadRunning = False
-                MsgBox("An input is missing!", MsgBoxStyle.Exclamation, "Downloader")
+            ' Check URL
+            If urlPath = "" Then Throw New InvalidURLException("Empty URL was given")
+
+            ' Check File path
+            If localPath = "" Then Throw New InvalidFilePathException("Empty file path was given")
+            If IO.File.Exists(localPath) And Not overwriteExistingFiles Then Throw New InvalidFilePathException("File already exists")
+
+            ' Input is complete, let's check if it's ok
+            'Disable all buttons first
+            DownloadButton.Enabled = False
+            'ButtonSettings.Enabled = False
+            TextBoxPath.Enabled = False
+            TextBox.Enabled = False
+            'Now Declare
+            Dim s As New WebClient
+            AddHandler s.DownloadProgressChanged, AddressOf DownloadProgressChanged
+            AddHandler s.DownloadFileCompleted, AddressOf Finished
+            'Now Evaluate
+            Dim shortfilename As String
+            Dim localfile As String
+            shortfilename = EvaluateInternetSourceFile(TextBox.Text)
+            localfile = EvaluateLocalFile(shortfilename)
+            downloadedFile = localfile
+            'Now check the internet connection
+            If CheckForInternetConnection() = False Then
+                NotifyIcon.ShowBalloonTip(2000, "Downloader", "No internet connection found. ", ToolTipIcon.Error)
+                Exit Sub
             End If
+            'Start the Stopwatch
+            SW = Stopwatch.StartNew
+            'Show balloon
+            NotifyIcon.ShowBalloonTip(2000, "Downloader", "Your download is starting.", ToolTipIcon.Info)
+            'Now Download
+            ProgressBar.Style = ProgressBarStyle.Marquee
+            isDownloadRunning = True
+            s.DownloadFileAsync(New Uri(TextBox.Text), localfile)
             'Else
             'DownloadDirectory.Create()
             'MsgBox("Please Restart the Download. ")
@@ -155,11 +154,7 @@ Public Class Main
     End Sub
 
     Public Function CheckForInternetConnection() As Boolean
-        If isMainWindow = False Then
-            Me.Text = "Downloader - Checking internet connection..."
-        Else
-            Me.Text = "Main Downloader - Checking internet connection..."
-        End If
+        Me.Text = "Downloader - Checking internet connection..."
         If My.Computer.Network.IsAvailable = False Then
             Return False
         End If
@@ -187,7 +182,7 @@ Public Class Main
     Private Sub DownloadFromClipboardToolStripMenuItem_Click(sender As System.Object, e As System.EventArgs) Handles DownloadFromClipboardToolStripMenuItem.Click
         If Clipboard.ContainsText() Then
             TextBox.Text = Clipboard.GetText()
-            StartDownload()
+            StartDownload(TextBox.Text, TextBoxPath.Text)
         Else
             MsgBox("An error occured. " + Environment.NewLine + "Details: There is no text in the clipboard. ", MsgBoxStyle.Critical, "Error!")
         End If

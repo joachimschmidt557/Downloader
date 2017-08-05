@@ -90,6 +90,7 @@
     <Import Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Exceptions.vb" />
     <Compile Include="main.vb">
       <SubType>Form</SubType>
     </Compile>
